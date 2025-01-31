@@ -94,7 +94,6 @@ class GPSModel(torch.nn.Module):
         self.non_linearity = non_linearity
         self.loss_type = loss_type
         self.batch_norm = batch_norm
-        self.norm = Normalize(hidden_feature_dim, norm="batch")
         
         # Initial projection
         self.proj_layer = Linear(input_feature_dim, hidden_feature_dim)
@@ -103,33 +102,36 @@ class GPSModel(torch.nn.Module):
         
         # GPS layers
         self.conv_layers = nn.ModuleList()
+        self.non_linear_layers = nn.ModuleList()
+        self.normalize_layers = nn.ModuleList()
+
         for _ in range(L):
             self.conv_layers.append(GPSLayer(hidden_feature_dim, hidden_feature_dim, use_W1=use_W1, bias=use_bias))
-            self.non_linear_layers = GPSLayer.non_linear_layers
-            if self.batch_norm:
-                self.conv_layers.append(nn.BatchNorm1d(hidden_feature_dim))
-        
+            self.non_linear_layers.append(self.conv_layers[-1].non_linear_layers)
+            self.normalize_layers.append(self.conv_layers[-1].norm2)
+
+        self.final_layer = GPSLayer(hidden_feature_dim, num_classes, use_W1=use_W1, bias=use_bias)
+
         # Output projection
         self.output_proj = Linear(hidden_feature_dim, num_classes)
         
     def forward(self, data):
         x, edge_index = data.x, data.edge_index
-        
-        # Initial projection
-        x = self.input_proj(x.float())
+
+        x = self.proj_layer(x.float())
+        if self.non_linearity == "relu":
+            x = F.relu(x)
         if self.batch_norm:
             x = self.input_bn(x)
-        x = F.relu(x)
-        x = self.dropout(x)
-        
-        # GPS layers
-        for layer in self.conv_layers:
-            x = layer(x, edge_index)
-            if self.batch_norm:
+
+        for l in range(self.L):
+            x = self.conv_layers[l](x, edge_index)
+            if self.normalize_layers:
                 x = F.relu(x)
-                x = self.dropout(x)
+                x = self.normalize_layers[l](x)
         
         # Output projection
+        x = self.final_layer(x, edge_index)
         x = self.output_proj(x)
         
         return F.log_softmax(x, dim=1)
