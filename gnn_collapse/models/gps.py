@@ -94,7 +94,6 @@ class GPSModel(torch.nn.Module):
         self.non_linearity = non_linearity
         self.loss_type = loss_type
         self.batch_norm = batch_norm
-        self.norm = Normalize(hidden_feature_dim, norm="batch")
         
         # Initial projection
         self.proj_layer = Linear(input_feature_dim, hidden_feature_dim)
@@ -113,6 +112,7 @@ class GPSModel(torch.nn.Module):
             if self.batch_norm:
                 self.conv_layers.append(nn.BatchNorm1d(hidden_feature_dim))
         
+
         # Output projection
         self.output_proj = Linear(hidden_feature_dim, num_classes)
         
@@ -132,9 +132,10 @@ class GPSModel(torch.nn.Module):
             if self.batch_norm:
                 self.normalize_layers[l][x]
                 x = F.relu(x)
-                x = self.dropout(x)
+                x = self.normalize_layers[l](x)
         
         # Output projection
+        x = self.final_layer(x, edge_index)
         x = self.output_proj(x)
         
         return F.log_softmax(x, dim=1)
