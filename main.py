@@ -93,7 +93,7 @@ if __name__ == "__main__":
     
     args = get_run_args()
     if args["model_name"] == 'easygt':
-        transform = T.AddRandomWalkPE(10)
+        transform = T.AddLaplacianEigenvectorPE(10, attr_name=None)
     if args["model_name"] not in ["bethe_hessian", "normalized_laplacian"]:
         train_sbm_dataset = SBM(
             args=args,
