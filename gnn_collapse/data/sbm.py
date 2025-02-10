@@ -2,8 +2,9 @@
 Stochastic block model graphs
 """
 
-import functools
 import os
+import shutil
+import functools
 from enum import Enum
 import math
 import numpy as np
@@ -107,12 +108,13 @@ class SBM(Dataset):
 
     def load_data(self):
         if os.path.exists(self.dataset_path):
-            print("Loading data from filesystem")
-            self.graphs_list = torch.load(self.dataset_path+"/data.pt")
-        else:
-            print("Generating data")
-            self.generate_data()
-            self.save_data()
+            shutil.rmtree(self.dataset_path)
+            # print("Loading data from filesystem")
+            # self.graphs_list = torch.load(self.dataset_path+"/data.pt")
+        # else:
+        print("Generating data")
+        self.generate_data()
+        self.save_data()
 
     def generate_single_graph(self):
         """Generate a single SBM graph"""
@@ -156,6 +158,7 @@ class SBM(Dataset):
         indices = torch.nonzero(Adj)
         edge_index = indices.to(torch.long)
         data = Data(x=X, y=labels, edge_index=edge_index.t().contiguous())
+        previous_embedding = data['x']
         if(self.transform is not None):
             data = self.transform(data)
         return data
@@ -221,7 +224,6 @@ class SBMRegular(SBM):
             dataset_dir = os.path.join(self.dataset_dir, "data/sbm_reg/test")
         self.dataset_path = os.path.join(dataset_dir, data_dir)
 
-    @functools.cache
     def generate_k_regular_bipartite(self, k, num_nodes):
         valid = False
         max_tries = 10000
