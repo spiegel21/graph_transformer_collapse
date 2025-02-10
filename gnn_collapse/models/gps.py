@@ -104,29 +104,33 @@ class GPSModel(torch.nn.Module):
         self.conv_layers = nn.ModuleList()
         self.non_linear_layers = nn.ModuleList()
         self.normalize_layers = nn.ModuleList()
-
         for _ in range(L):
-            self.conv_layers.append(GPSLayer(hidden_feature_dim, hidden_feature_dim, use_W1=use_W1, bias=use_bias))
-            self.non_linear_layers.append(self.conv_layers[-1].non_linear_layers)
-            self.normalize_layers.append(self.conv_layers[-1].norm2)
-
-        self.final_layer = GPSLayer(hidden_feature_dim, num_classes, use_W1=use_W1, bias=use_bias)
+            gps_layer = GPSLayer(hidden_feature_dim, hidden_feature_dim, use_W1=use_W1, bias=use_bias)
+            self.conv_layers.append(gps_layer)
+            self.non_linear_layers.append(gps_layer.non_linear_layers)
+            self.normalize_layers.append(gps_layer.norm2)
+            if self.batch_norm:
+                self.conv_layers.append(nn.BatchNorm1d(hidden_feature_dim))
+        
 
         # Output projection
         self.output_proj = Linear(hidden_feature_dim, num_classes)
         
     def forward(self, data):
         x, edge_index = data.x, data.edge_index
-
+        
+        # Initial projection
         x = self.proj_layer(x.float())
-        if self.non_linearity == "relu":
-            x = F.relu(x)
         if self.batch_norm:
             x = self.input_bn(x)
-
-        for l in range(self.L):
+        x = F.relu(x)
+        x = self.dropout(x)
+        
+        # GPS layers
+        for l in len(self.conv_layers):
             x = self.conv_layers[l](x, edge_index)
-            if self.normalize_layers:
+            if self.batch_norm:
+                self.normalize_layers[l][x]
                 x = F.relu(x)
                 x = self.normalize_layers[l](x)
         
