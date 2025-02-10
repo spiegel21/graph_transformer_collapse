@@ -153,14 +153,16 @@ class OnlineRunner:
             self.normalized_features_nc1_snapshots = []
 
         model.train()
-        losses = []
-        accuracies = []
         filenames = []
 
         animation_filename = "{}/nc_tracker.mp4".format(self.args["vis_dir"])
 
         max_iters = self.args["num_epochs"]*len(dataloader)
         for epoch in range(self.args["num_epochs"]):
+            with open(self.args["results_file"], 'a') as f:
+                f.write(f'Epoch {epoch} memory summary:\n{torch.cuda.memory_summary(device=None, abbreviated=False)}\n')
+            losses = []
+            accuracies = []
             for step_idx, data in tqdm(enumerate(dataloader)):
                 iter_count = epoch*len(dataloader) + step_idx
 
@@ -173,20 +175,20 @@ class OnlineRunner:
                 if self.args["track_nc"] and (iter_count%self.args["nc_interval"] == 0 or iter_count + 1 == max_iters):
                     model_name = "model_iter_{}.pt".format(iter_count)
                     model_path = os.path.join(self.model_dir, model_name)
-                    if self.saved_model_exists:
-                        # load model
-                        print("Loading the saved model for iteration idx {}".format(iter_count))
-                        model.load_state_dict(torch.load( model_path ))
-                    else:
-                        # save model
-                        print("Saving the model after iteration idx {}".format(iter_count))
-                        torch.save(model.state_dict(), model_path)
+                    # if self.saved_model_exists:
+                    #     # load model
+                    #     print("Loading the saved model for iteration idx {}".format(iter_count))
+                    #     model.load_state_dict(torch.load( model_path ))
+                    # else:
+                    #     # save model
+                    #     print("Saving the model after iteration idx {}".format(iter_count))
+                    #     torch.save(model.state_dict(), model_path)
                     if not os.path.exists(animation_filename):
                         filename = "{}/nc_tracker_{}.png".format(self.args["vis_dir"], iter_count)
                         filenames.append(filename)
-                        print("Tracking NC metrics")
-                        self.track_train_graphs_final_nc(dataloader=nc_dataloader, model=model,
-                                        iter_count=iter_count, filename=filename)
+                        # print("Tracking NC metrics")
+                        # self.track_train_graphs_final_nc(dataloader=nc_dataloader, model=model,
+                        #                iter_count=iter_count, filename=filename)
 
             # get stats after epoch
             self.test_loop(
@@ -195,11 +197,11 @@ class OnlineRunner:
                 epoch=epoch
             )
             # self.track_belief_histograms(dataloader=test_dataloader, model=model, epoch=0)
-            self.track_test_graphs_intermediate_nc(dataloader=test_dataloader, model=model, epoch=epoch)
+            # TRACK NC INTERMEDIATE self.track_test_graphs_intermediate_nc(dataloader=test_dataloader, model=model, epoch=epoch)
 
-        with open(self.args["results_file"], 'a') as f:
-            f.write("""Avg train loss: {}\n Avg train acc: {}\n Std train acc: {}\n""".format(
-                np.mean(losses), np.mean(accuracies), np.std(accuracies)))
+            with open(self.args["results_file"], 'a') as f:
+                f.write("""Avg train loss: {}\n Avg train acc: {}\n Std train acc: {}\n""".format(
+                    np.mean(losses), np.mean(accuracies), np.std(accuracies)))
 
         if self.args["track_nc"] and not os.path.exists(animation_filename):
             print("track_nc enabled! preparing a new animation file")
@@ -317,25 +319,14 @@ class OnlineRunner:
                 W1 = torch.clone(model.final_layer.lin_root.weight).type(torch.double)
             else:
                 W1 = torch.zeros_like(W2).type(torch.double)
-        elif self.args["model_name"] == "graphtrans":
-            # Adjust these lines to match the actual final-layer attributes in your GraphTrans model:
-            W2 = torch.clone(model.final_layer.lin_rel_q.weight).type(torch.double)
-            if self.args["use_W1"]:
-                W1 = torch.clone(model.final_layer.lin_root.weight).type(torch.double)
-            else:
-                W1 = torch.zeros_like(W2).type(torch.double)
-            if self.args["use_W1"]:
-                # If GraphTrans also has a distinct "W1" parameter, clone it similarly;
-                # otherwise just set W1 = zeros_like(W2).
-                W1 = torch.zeros_like(W2).type(torch.double)
-            else:
-                W1 = torch.zeros_like(W2).type(torch.double)
-        elif self.args["model_name"] == "gps":
-            W2 = torch.clone(model.final_layer.lin_rel.weight).type(torch.double)
-            if self.args["use_W1"]:
-                W1 = torch.clone(model.final_layer.lin_root.weight).type(torch.double)
-            else:
-                W1 = torch.zeros_like(W2).type(torch.double)
+
+        elif self.args["model_name"] == "easygt":
+            # If we're doing the graph transformer, we don't actually use W1 and W2
+            # So just make them zero arrays of the appropriate shape and ignore it
+            # I'm pretty sure these could just be None variables too actually
+            W1 = torch.zeros(self.args["hidden_feature_dim"]*4,self.args["hidden_feature_dim"]*4).to(self.args["device"]).double()
+            W2 = torch.zeros(self.args["hidden_feature_dim"]*4,self.args["hidden_feature_dim"]*4).to(self.args["device"]).double()
+
         else:
             raise ValueError("Unsupported model for NC tracking!")
 
@@ -343,6 +334,10 @@ class OnlineRunner:
         W2.requires_grad = False
 
         # capture metrics for all graphs in training set
+        # NOTE: This is the part of the code that will cause memory errors.
+        # The big tensors are the ones like H_array and A_hat_array. Their shapes are
+        # number of graphs x hidden dimensionality x hidden dimensionality
+        # so you can see how they may take up a lot of space
         for data in dataloader:
             device = self.args["device"]
             data = data.to(device)
@@ -356,19 +351,19 @@ class OnlineRunner:
             acc = compute_accuracy_multiclass(pred=pred, labels=data.y, C=self.args["C"])
             loss_array.append(loss.detach().cpu().numpy())
             acc_array.append(acc)
-            labels_array.append(data.y)
+            labels_array.append(data.y.detach().cpu())
 
             # H is the final normalized feature map
             H = self.normalized_features[self.args["num_layers"] - 1]
             H = H.t().type(torch.double)
             H.requires_grad = False
-            H_array.append(H)
+            H_array.append(H.detach().cpu().half())
 
             A = to_dense_adj(data.edge_index)[0].to(self.args["device"])
             D_inv = torch.diag(1 / torch.sum(A, 1)).to(self.args["device"])
             A_hat = (A @ D_inv).type(torch.double).to(self.args["device"])
             A_hat.requires_grad = False
-            A_hat_array.append(A_hat)
+            A_hat_array.append(A_hat.detach().cpu().half())
 
         self.metric_tracker.compute_metrics(
             H_array=H_array,
