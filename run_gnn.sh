@@ -9,16 +9,32 @@ mkdir -p out/final/
 # python main.py $FILE
 # done
 
-# # Graph Transformer
-# for FILE in configs/final/easygt/C_2/*
+# Graph Transformer
+for FILE in configs/final/easygt/C_2/*
+do
+echo -e "$FILE"
+rm -rf models out
+python main.py $FILE
+done
+
+# GIN
+# for FILE in configs/final/gin/C_2/*
 # do
 # echo -e "$FILE"
 # rm -rf models out
 # python main.py $FILE
 # done
 
-# GIN
-for FILE in configs/final/gin/C_2/*
+# # GIN
+# for FILE in configs/final/gin/C_2/*
+# do
+# echo -e "$FILE"
+# rm -rf models out
+# python main.py $FILE
+# done
+
+# SMPNN
+for FILE in configs/final/smpnn/C_2/*
 do
 echo -e "$FILE"
 rm -rf models out
