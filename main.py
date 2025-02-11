@@ -61,8 +61,8 @@ def get_run_args():
         valid_options = list(GNN_factory.keys()) + list(Spectral_factory.keys())
         sys.exit("Invalid model type. Should be one of: {}".format(valid_options))
 
-    if args["model_name"] in GNN_factory and args["non_linearity"] not in ["", "relu"]:
-        sys.exit("Invalid non_linearity. Should be one of: '', 'relu' ")
+    if args["model_name"] in GNN_factory and args["non_linearity"] not in ["", "relu", "silu"]:
+        sys.exit("Invalid non_linearity. Should be one of: '', 'relu', 'silu'")
 
     if args["model_name"] in GNN_factory and args["optimizer"] not in ["sgd", "adam"]:
         sys.exit("Invalid non_linearity. Should be one of: 'sgd', 'adam' ")
