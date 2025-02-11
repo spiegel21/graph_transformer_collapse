@@ -95,8 +95,9 @@ if __name__ == "__main__":
     if args["model_name"] == 'easygt':
         n_embedding = 10
         transform = T.AddLaplacianEigenvectorPE(n_embedding, attr_name=None)
-        args['input_feature_dim'] += n_embedding
+        # args['input_feature_dim'] += n_embedding
     else:
+        n_embedding = 0
         transform = None
     if args["model_name"] not in ["bethe_hessian", "normalized_laplacian"]:
         train_sbm_dataset = SBM(
@@ -112,6 +113,7 @@ if __name__ == "__main__":
             is_training=True,
             transform=transform
         )
+        print(train_sbm_dataset.get(0)['x'].shape)
         nc_sbm_dataset = SBM(
             args=args,
             N=args["N_train"],
@@ -125,30 +127,38 @@ if __name__ == "__main__":
             is_training=True,
             transform=transform
         )
+        print(train_sbm_dataset.get(0)['x'].shape)
         # keep batch size = 1 for consistent measurement of loss and accuracies under
         # permutation of classes.
         train_dataloader = DataLoader(dataset=train_sbm_dataset, batch_size=1)
         nc_dataloader = DataLoader(dataset=nc_sbm_dataset, batch_size=1)
-    test_sbm_dataset = SBM(
-        args=args,
-        N=args.get("N_test", args.get("N")),
-        C=args["C"],
-        Pr=args["Pr"],
-        p=args.get("p_test", args.get("p")),
-        q=args.get("q_test", args.get("q")),
-        num_graphs=args["num_test_graphs"],
-        feature_strategy=args["feature_strategy"],
-        feature_dim=args["input_feature_dim"],
-        is_training=False,
-        transform=transform
-    )
-    test_dataloader = DataLoader(dataset=test_sbm_dataset, batch_size=1)
 
-    if args["model_name"] in GNN_factory:
-        model_class = GNN_factory[args["model_name"]]
-        runner = OnlineRunner(args=args, model_class=model_class)
-        runner.run(train_dataloader=train_dataloader, nc_dataloader=nc_dataloader,
-                    test_dataloader=test_dataloader)
-    else:
-        model_class = Spectral_factory[args["model_name"]]
-        spectral_clustering(model_class=model_class, dataloader=test_dataloader, args=args)
+        test_sbm_dataset = SBM(
+            args=args,
+            N=args.get("N_test", args.get("N")),
+            C=args["C"],
+            Pr=args["Pr"],
+            p=args.get("p_test", args.get("p")),
+            q=args.get("q_test", args.get("q")),
+            num_graphs=args["num_test_graphs"],
+            feature_strategy=args["feature_strategy"],
+            feature_dim=args["input_feature_dim"],
+            is_training=False,
+            transform=transform
+        )
+        test_dataloader = DataLoader(dataset=test_sbm_dataset, batch_size=1)
+
+
+        # print(args['input_feature_dim'])
+
+        args['input_feature_dim'] += n_embedding
+    
+
+        if args["model_name"] in GNN_factory:
+            model_class = GNN_factory[args["model_name"]]
+            runner = OnlineRunner(args=args, model_class=model_class)
+            runner.run(train_dataloader=train_dataloader, nc_dataloader=nc_dataloader,
+                        test_dataloader=test_dataloader)
+        else:
+            model_class = Spectral_factory[args["model_name"]]
+            spectral_clustering(model_class=model_class, dataloader=test_dataloader, args=args)
