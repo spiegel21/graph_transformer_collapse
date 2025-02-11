@@ -9,13 +9,21 @@ mkdir -p out/final/
 # python main.py $FILE
 # done
 
-# Graph Transformer
-for FILE in configs/final/easygt/C_2/*
+# Comparing GT and GCN with equivalent parameters
+for FILE in configs/final/compare_gt_gcn/*/*
 do
 echo -e "$FILE"
 rm -rf models out
 python main.py $FILE
 done
+
+# # Graph Transformer
+# for FILE in configs/final/easygt/C_2/*
+# do
+# echo -e "$FILE"
+# rm -rf models out
+# python main.py $FILE
+# done
 
 # GIN
 # for FILE in configs/final/gin/C_2/*
