@@ -7,6 +7,7 @@ from gnn_collapse.models.baselines import NormalizedLaplacian
 from gnn_collapse.models.gps import GPSModel
 from gnn_collapse.models.graphconv import GraphConvModel
 from gnn_collapse.models.easy_gt import EasyGTModel
+from gnn_collapse.models.gin import GINModel
 
 Spectral_factory = {
     "bethe_hessian": BetheHessian,
@@ -17,5 +18,6 @@ GNN_factory = {
     # A factory to support additional model designs in the future!
     "graphconv": GraphConvModel,
     "gps": GPSModel,
-    "easygt": EasyGTModel
+    "easygt": EasyGTModel,
+    "gin": GINModel,
 }

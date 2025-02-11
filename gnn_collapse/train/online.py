@@ -159,8 +159,9 @@ class OnlineRunner:
 
         max_iters = self.args["num_epochs"]*len(dataloader)
         for epoch in range(self.args["num_epochs"]):
-            with open(self.args["results_file"], 'a') as f:
-                f.write(f'Epoch {epoch} memory summary:\n{torch.cuda.memory_summary(device=None, abbreviated=False)}\n')
+            if torch.cuda.is_available():
+                with open(self.args["results_file"], 'a') as f:
+                    f.write(f'Epoch {epoch} memory summary:\n{torch.cuda.memory_summary(device=None, abbreviated=False)}\n')
             losses = []
             accuracies = []
             for step_idx, data in tqdm(enumerate(dataloader)):
@@ -523,6 +524,8 @@ class OnlineIncRunner:
             loss = compute_loss_multiclass(type=args["loss_type"], pred=pred, labels=data.y, C=args["C"])
             model.zero_grad()
             loss.backward()
+            # might add gradient clipping here
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
             acc = compute_accuracy_multiclass(pred=pred, labels=data.y, C=args["C"])
             losses.append(loss.detach().cpu().numpy())
