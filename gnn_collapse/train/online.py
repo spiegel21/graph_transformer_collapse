@@ -133,6 +133,8 @@ class OnlineRunner:
         loss = compute_loss_multiclass(type=self.args["loss_type"], pred=pred, labels=data.y, C=self.args["C"])
         model.zero_grad()
         loss.backward()
+        # might add gradient clipping here
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
         optimizer.step()
         acc = compute_accuracy_multiclass(pred=pred, labels=data.y, C=self.args["C"])
         return model, optimizer, loss.detach().cpu().numpy(), acc
@@ -166,6 +168,7 @@ class OnlineRunner:
             accuracies = []
             for step_idx, data in tqdm(enumerate(dataloader)):
                 iter_count = epoch*len(dataloader) + step_idx
+                print(data['x'].shape)
 
                 if not self.saved_model_exists:
                     model, optimizer, loss, acc = self.train_single_iter(
@@ -325,6 +328,13 @@ class OnlineRunner:
             W2 = torch.clone(model.final_layer.nn.weight).type(torch.double)
             if self.args["use_W1"]:
                 W1 = torch.clone(model.final_layer.nn.weight).type(torch.double)
+            else:
+                W1 = torch.zeros_like(W2).type(torch.double)
+
+        elif self.args["model_name"] == "smpnn":
+            W2 = torch.clone(model.final_layer.weight).type(torch.double)
+            if self.args["use_W1"]:
+                W1 = torch.clone(model.final_layer.weight).type(torch.double)
             else:
                 W1 = torch.zeros_like(W2).type(torch.double)
 
