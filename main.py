@@ -93,7 +93,9 @@ if __name__ == "__main__":
     
     args = get_run_args()
     if args["model_name"] == 'easygt':
-        transform = T.AddLaplacianEigenvectorPE(10, attr_name=None)
+        n_embedding = 10
+        transform = T.AddLaplacianEigenvectorPE(n_embedding, attr_name=None)
+        args['input_feature_dim'] += n_embedding
     else:
         transform = None
     if args["model_name"] not in ["bethe_hessian", "normalized_laplacian"]:
