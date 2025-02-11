@@ -159,8 +159,9 @@ class SBM(Dataset):
         edge_index = indices.to(torch.long)
         data = Data(x=X, y=labels, edge_index=edge_index.t().contiguous())
         previous_embedding = data['x']
-        if(self.transform is not None):
-            data = self.transform(data)
+        # if(self.transform is not None):
+        #     data = self.transform(data)
+        #     print(data['x'].shape)
         return data
 
     def get_features(self, Adj):
