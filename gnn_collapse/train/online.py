@@ -330,6 +330,13 @@ class OnlineRunner:
             else:
                 W1 = torch.zeros_like(W2).type(torch.double)
 
+        elif self.args["model_name"] == "smpnn":
+            W2 = torch.clone(model.final_layer.weight).type(torch.double)
+            if self.args["use_W1"]:
+                W1 = torch.clone(model.final_layer.weight).type(torch.double)
+            else:
+                W1 = torch.zeros_like(W2).type(torch.double)
+
         elif self.args["model_name"] == "easygt":
             # If we're doing the graph transformer, we don't actually use W1 and W2
             # So just make them zero arrays of the appropriate shape and ignore it
