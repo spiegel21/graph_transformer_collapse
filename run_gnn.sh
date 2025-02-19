@@ -10,7 +10,7 @@ mkdir -p out/final/
 # done
 
 # Comparing GT and GCN with equivalent parameters
-for FILE in configs/final/compare_gt_gcn/*/*
+for FILE in configs/final/compare_gt_gcn/C_2/*
 do
 echo -e "$FILE"
 rm -rf models out
@@ -42,12 +42,12 @@ done
 # done
 
 # SMPNN
-for FILE in configs/final/smpnn/C_2/*
-do
-echo -e "$FILE"
-rm -rf models out
-python main.py $FILE
-done
+# for FILE in configs/final/smpnn/C_2/*
+# do
+# echo -e "$FILE"
+# rm -rf models out
+# python main.py $FILE
+# done
 
 # GCN with the same parameters (few layers, tiny hidden size)
 # for FILE in configs/final/sample/T1/*

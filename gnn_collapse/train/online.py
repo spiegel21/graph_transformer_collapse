@@ -161,15 +161,10 @@ class OnlineRunner:
 
         max_iters = self.args["num_epochs"]*len(dataloader)
         for epoch in range(self.args["num_epochs"]):
-            if torch.cuda.is_available():
-                with open(self.args["results_file"], 'a') as f:
-                    f.write(f'Epoch {epoch} memory summary:\n{torch.cuda.memory_summary(device=None, abbreviated=False)}\n')
             losses = []
             accuracies = []
             for step_idx, data in tqdm(enumerate(dataloader)):
                 iter_count = epoch*len(dataloader) + step_idx
-                print(data['x'].shape)
-
                 if not self.saved_model_exists:
                     model, optimizer, loss, acc = self.train_single_iter(
                         data=data, model=model, optimizer=optimizer)
@@ -342,8 +337,8 @@ class OnlineRunner:
             # If we're doing the graph transformer, we don't actually use W1 and W2
             # So just make them zero arrays of the appropriate shape and ignore it
             # I'm pretty sure these could just be None variables too actually
-            W1 = torch.zeros(self.args["hidden_feature_dim"]*4,self.args["hidden_feature_dim"]*4).to(self.args["device"]).double()
-            W2 = torch.zeros(self.args["hidden_feature_dim"]*4,self.args["hidden_feature_dim"]*4).to(self.args["device"]).double()
+            W1 = torch.clone(model.final_layer.weight).type(torch.double).detach().cpu()
+            W2 = torch.clone(model.final_layer.weight).type(torch.double).detach().cpu()
 
         else:
             raise ValueError("Unsupported model for NC tracking!")

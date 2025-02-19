@@ -72,11 +72,13 @@ class GUFMMetricTracker:
 
         # NC3 ETF
         self.W1_H_NC3_ETF = Metric("$(W_1H, ETF)$")
-        self.W2_HA_hat_NC3_ETF = Metric(label="$(W_2H\hat{A}, ETF)$")
+        # self.W2_HA_hat_NC3_ETF = Metric(label="$(W_2H\hat{A}, ETF)$")
+        self.W2_HA_hat_NC3_ETF = Metric(label="$(W_2H, ETF)$")
         self.W1H_W2HA_hat_NC3_ETF = Metric(label="$(\hat{Y}, ETF)$")
         # NC3 OF
         self.W1_H_NC3_OF = Metric("$(W_1H, OF)$")
-        self.W2_HA_hat_NC3_OF = Metric(label="$(W_2H\hat{A}, OF)$")
+        # self.W2_HA_hat_NC3_OF = Metric(label="$(W_2H\hat{A}, OF)$")
+        self.W2_HA_hat_NC3_OF = Metric(label="$(W_2H, OF)$")
         self.W1H_W2HA_hat_NC3_OF = Metric(label="$(\hat{Y}, OF)$")
         # plain alignment
         self.W1_H_NC3 = Metric(label="$(W_1, H)$")
@@ -130,7 +132,7 @@ class GUFMMetricTracker:
             MMT /= torch.norm(MMT, p='fro')
 
             sub = (torch.eye(K) - 1 / K * torch.ones((K, K))) / pow(K - 1, 0.5)
-            sub = sub.to(self.args["device"])
+            sub = sub.to(MMT.device)
             ETF_metric = torch.norm(MMT - sub, p='fro')
         return ETF_metric
 
@@ -147,7 +149,7 @@ class GUFMMetricTracker:
             K = W.shape[0]
             # assert K == self.args["C"]
             sub = 1 / pow(K - 1, 0.5) * (torch.eye(K) - 1 / K * torch.ones((K, K)))
-            sub = sub.to(self.args["device"])
+            sub = sub.to(Wz.device)
             res = torch.norm(Wz - sub, p='fro')
         return res
 
@@ -158,7 +160,7 @@ class GUFMMetricTracker:
             MMT = torch.mm(M, M.T)
             MMT /= torch.norm(MMT, p='fro')
             sub = torch.eye(K)/np.sqrt(K)
-            sub = sub.to(self.args["device"])
+            sub = sub.to(MMT.device)
             ETF_metric = torch.norm(MMT - sub, p='fro')
         return ETF_metric
 
@@ -171,7 +173,7 @@ class GUFMMetricTracker:
             K = W.shape[0]
             # assert K == self.args["C"]
             sub = torch.eye(K)/np.sqrt(K)
-            sub = sub.to(self.args["device"])
+            sub = sub.to(Wz.device)
             res = torch.norm(Wz - sub, p='fro')
         return res
 
@@ -408,12 +410,12 @@ class GUFMMetricTracker:
         # for C==2, when the class means are centered by global mean,
         # they always form a line and have maximum angle of separation.
         if self.args["C"] > 2:
-            metrics.extend([self.W2_NC2_ETF, self.H_NC2_ETF, self.HA_hat_NC2_ETF])
+            metrics.extend([self.W2_NC2_ETF, self.H_NC2_ETF])
         else:
             metrics.extend([self.W2_NC2_ETF])
         for metric in metrics:
-            ax[1, 2].plot(self.x, metric.get_means(), label=metric.label)
-            ax[1, 2].fill_between(
+            ax[1, 1].plot(self.x, metric.get_means(), label=metric.label)
+            ax[1, 1].fill_between(
                 self.x,
                 metric.get_means() - metric.get_stds(),
                 metric.get_means() + metric.get_stds(),
@@ -428,8 +430,8 @@ class GUFMMetricTracker:
         # metrics.extend([self.W2_NC2_OF, self.H_NC2_OF, self.HA_hat_NC2_OF])
         metrics.extend([self.W2_NC2_OF])
         for metric in metrics:
-            ax[1, 2].plot(self.x, metric.get_means(), linestyle="dashed", label=metric.label)
-            ax[1, 2].fill_between(
+            ax[1, 1].plot(self.x, metric.get_means(), linestyle="dashed", label=metric.label)
+            ax[1, 1].fill_between(
                 self.x,
                 metric.get_means() - metric.get_stds(),
                 metric.get_means() + metric.get_stds(),
@@ -437,9 +439,9 @@ class GUFMMetricTracker:
                 interpolate=True,
             )
 
-        ax[1, 2].grid(True)
-        _ = ax[1, 2].set(xlabel=r"$iter\%{}$".format(nc_interval), ylabel="$NC_2$ (log10 scale)")
-        ax[1, 2].legend(fontsize=30)
+        ax[1, 1].grid(True)
+        _ = ax[1, 1].set(xlabel=r"$iter\%{}$".format(nc_interval), ylabel="$NC_2$ (log10 scale)")
+        ax[1, 1].legend(fontsize=30)
         return ax
 
     def plot_NC3(self, ax, W1, W2, H_array, A_hat_array, labels_array, nc_interval):
@@ -463,31 +465,31 @@ class GUFMMetricTracker:
             W1_H_ETF_alignment = self.compute_W_H_ETF_relation(W=W1, feat=H, labels=labels)
             W1_H_NC3_ETF_arr.append(W1_H_ETF_alignment.detach().cpu().numpy())
 
-            W2_HA_hat_ETF_alignment = self.compute_W_H_ETF_relation(W=W2, feat=H@A_hat, labels=labels)
+            W2_HA_hat_ETF_alignment = self.compute_W_H_ETF_relation(W=W2, feat=H, labels=labels)
             W2_HA_hat_NC3_ETF_arr.append(W2_HA_hat_ETF_alignment.detach().cpu().numpy())
 
             # Z = W1H + W2HA_hat
             Z = W1 @ H + W2 @ H @ A_hat
-            dummy_W = torch.eye(W1.shape[0]).type(torch.double).to(self.args["device"])
+            dummy_W = torch.eye(W1.shape[0]).type(torch.double).to(W1.device)
             Z_ETF_alignment = self.compute_W_H_ETF_relation(W=dummy_W, feat=Z, labels=labels)
             W1H_W2HA_hat_NC3_ETF_arr.append(Z_ETF_alignment.detach().cpu().numpy())
 
             # NC3 OF Alignment
             W1_H_OF_alignment = self.compute_W_H_OF_relation(W=W1, feat=H, labels=labels)
             W1_H_NC3_OF_arr.append(W1_H_OF_alignment.detach().cpu().numpy())
-            W2_HA_hat_OF_alignment = self.compute_W_H_OF_relation(W=W2, feat=H@A_hat, labels=labels)
+            W2_HA_hat_OF_alignment = self.compute_W_H_OF_relation(W=W2, feat=H, labels=labels)
             W2_HA_hat_NC3_OF_arr.append(W2_HA_hat_OF_alignment.detach().cpu().numpy())
 
             # Z = W1H + W2HA_hat
             Z = W1 @ H + W2 @ H @ A_hat
-            dummy_W = torch.eye(W1.shape[0]).type(torch.double).to(self.args["device"])
+            dummy_W = torch.eye(W1.shape[0]).type(torch.double).to(W1.device)
             Z_OF_alignment = self.compute_W_H_OF_relation(W=dummy_W, feat=Z, labels=labels)
             W1H_W2HA_hat_NC3_OF_arr.append(Z_OF_alignment.detach().cpu().numpy())
 
             # Weights and features alignment
             W1_H_alignment = self.compute_W_H_alignment(W=W1, feat=H, labels=labels)
             W1_H_NC3_arr.append(W1_H_alignment.detach().cpu().numpy())
-            W2_HA_hat_alignment = self.compute_W_H_alignment(W=W2, feat=H@A_hat, labels=labels)
+            W2_HA_hat_alignment = self.compute_W_H_alignment(W=W2, feat=H, labels=labels)
             W2_HA_hat_NC3_arr.append(W2_HA_hat_alignment.detach().cpu().numpy())
 
 
@@ -516,8 +518,8 @@ class GUFMMetricTracker:
             metrics.extend([self.W2_HA_hat_NC3_ETF])
 
         for metric in metrics:
-            ax[1, 3].plot(self.x, metric.get_means(), label=metric.label)
-            ax[1, 3].fill_between(
+            ax[1, 2].plot(self.x, metric.get_means(), label=metric.label)
+            ax[1, 2].fill_between(
                 self.x,
                 metric.get_means() - metric.get_stds(),
                 metric.get_means() + metric.get_stds(),
@@ -529,9 +531,11 @@ class GUFMMetricTracker:
         # skip Z plots
         # metrics.extend([self.W2_HA_hat_NC3_OF, self.W1H_W2HA_hat_NC3_OF])
         metrics.extend([self.W2_HA_hat_NC3_OF])
+
+        metrics = [self.W2_HA_hat_NC3]
         for metric in metrics:
-            ax[1, 3].plot(self.x, metric.get_means(), linestyle="dashed", label=metric.label)
-            ax[1, 3].fill_between(
+            ax[1, 2].plot(self.x, metric.get_means(), linestyle="dashed", label=metric.label)
+            ax[1, 2].fill_between(
                 self.x,
                 metric.get_means() - metric.get_stds(),
                 metric.get_means() + metric.get_stds(),
@@ -539,9 +543,9 @@ class GUFMMetricTracker:
                 interpolate=True,
             )
 
-        ax[1, 3].grid(True)
-        _ = ax[1, 3].set(xlabel=r"$iter\%{}$".format(nc_interval), ylabel="$NC_3$ (log10 scale)")
-        ax[1, 3].legend(fontsize=30)
+        ax[1, 2].grid(True)
+        _ = ax[1, 2].set(xlabel=r"$iter\%{}$".format(nc_interval), ylabel="$NC_3$ (log10 scale)")
+        ax[1, 2].legend(fontsize=30)
         return ax
 
 
@@ -549,7 +553,7 @@ class GUFMMetricTracker:
     def compute_metrics(self, H_array, A_hat_array, W1, W2, labels_array, iter,
                         train_loss_array, train_accuracy_array, filename, nc_interval):
 
-        fig, ax = plt.subplots(2, 2, figsize=(25, 25))
+        fig, ax = plt.subplots(2, 3, figsize=(35, 25))
 
         print("plotting train loss")
         ax = self.plot_train_loss(ax=ax, train_loss_array=train_loss_array, nc_interval=nc_interval)
@@ -559,10 +563,10 @@ class GUFMMetricTracker:
         ax[0,1].set_title('Training Accuracy')
         print("plotting NC1 metrics for H")
         ax = self.plot_NC1_H(ax=ax, H_array=H_array, labels_array=labels_array, nc_interval=nc_interval)
-        ax[1,0].set_title('NC_1 H')
-        print("plotting NC1 metrics for HA_hat")
-        ax = self.plot_NC1_HA_hat(ax=ax, H_array=H_array, A_hat_array=A_hat_array, labels_array=labels_array, nc_interval=nc_interval)
-        ax[1,1].set_title('NC_1 HA')
+        ax[1,0].set_title('NC_1 Metrics')
+        # print("plotting NC1 metrics for HA_hat")
+        # ax = self.plot_NC1_HA_hat(ax=ax, H_array=H_array, A_hat_array=A_hat_array, labels_array=labels_array, nc_interval=nc_interval)
+        # ax[1,1].set_title('NC_1 HA')
 
         # NOTE: Below are the metrics that use W_1 & W_2 - now we simply do not compute them.
 
@@ -574,14 +578,16 @@ class GUFMMetricTracker:
         # ax = self.plot_fro_norms(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
         #                         nc_interval=nc_interval)
 
-        # print("plotting NC2 metrics")
-        # ax = self.plot_NC2(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
-        #                     labels_array=labels_array, nc_interval=nc_interval)
+        print("plotting NC2 metrics")
+        ax = self.plot_NC2(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
+                            labels_array=labels_array, nc_interval=nc_interval)
+        ax[1,1].set_title('NC_2 Metrics')
 
 
-        # print("plotting NC3 metrics")
-        # ax = self.plot_NC3(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
-        #                     labels_array=labels_array, nc_interval=nc_interval)
+        print("plotting NC3 metrics")
+        ax = self.plot_NC3(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
+                            labels_array=labels_array, nc_interval=nc_interval)
+        ax[1,2].set_title('NC_3 Metric')
 
         plt.suptitle('Graph Transformer')
         fig.tight_layout()
