@@ -13,7 +13,7 @@
     "feature_strategy": "random_normal",
     "input_feature_dim": 8,
     "hidden_feature_dim": 8,
-    "num_layers" : 3,
+    "num_layers" : 32,
     "use_W1" : false,
     "use_bias": false,
     "batch_norm": true,
@@ -23,7 +23,7 @@
     "nc_interval": 1000,
     "num_epochs" : 8,
     "optimizer" : "sgd",
-    "lr" : 0.004,
+    "lr" : 0.001,
     "weight_decay": 5e-4,
     "sgd_momentum" : 0.9,
     "out_dir": "out/final/"

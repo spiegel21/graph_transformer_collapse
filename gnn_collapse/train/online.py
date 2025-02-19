@@ -168,7 +168,6 @@ class OnlineRunner:
             accuracies = []
             for step_idx, data in tqdm(enumerate(dataloader)):
                 iter_count = epoch*len(dataloader) + step_idx
-                print(data['x'].shape)
 
                 if not self.saved_model_exists:
                     model, optimizer, loss, acc = self.train_single_iter(
