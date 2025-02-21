@@ -124,7 +124,6 @@ class GPSModel(torch.nn.Module):
         if self.batch_norm:
             x = self.input_bn(x)
         x = F.relu(x)
-        x = self.dropout(x)
         
         # GPS layers
         for l in len(self.conv_layers):
