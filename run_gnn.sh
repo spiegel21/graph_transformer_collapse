@@ -9,24 +9,16 @@ mkdir -p out/final/
 # python main.py $FILE
 # done
 
-# Comparing GT and GCN with equivalent parameters
-for FILE in configs/final/compare_gt_gcn/C_2/*
-do
-echo -e "$FILE"
-rm -rf models out
-python main.py $FILE
-done
-
-# # Graph Transformer
-# for FILE in configs/final/easygt/C_2/*
+# # Comparing GT and GCN with equivalent parameters
+# for FILE in configs/final/compare_gt_gcn/*/*
 # do
 # echo -e "$FILE"
 # rm -rf models out
 # python main.py $FILE
 # done
 
-# GIN
-# for FILE in configs/final/gin/C_2/*
+# # Graph Transformer
+# for FILE in configs/final/easygt/C_2/*
 # do
 # echo -e "$FILE"
 # rm -rf models out
@@ -41,13 +33,14 @@ done
 # python main.py $FILE
 # done
 
+
 # SMPNN
-# for FILE in configs/final/smpnn/C_2/*
-# do
-# echo -e "$FILE"
+for FILE in configs/final/smpnn/C_2/*
+do
+echo -e "$FILE"
 # rm -rf models out
-# python main.py $FILE
-# done
+python main.py $FILE
+done
 
 # GCN with the same parameters (few layers, tiny hidden size)
 # for FILE in configs/final/sample/T1/*

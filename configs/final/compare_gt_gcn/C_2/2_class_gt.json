@@ -1,5 +1,5 @@
 {
-    "model_name": "gin",
+    "model_name": "easygt",
     "C": 2,
     "Pr": [0.5, 0.5],
     "N_train": 1000,
@@ -11,9 +11,9 @@
     "num_train_graphs": 1000,
     "num_test_graphs": 100,
     "feature_strategy": "random_normal",
-    "input_feature_dim": 8,
+    "input_feature_dim": 0,
     "hidden_feature_dim": 8,
-    "num_layers" : 32,
+    "num_layers" : 6,
     "use_W1" : false,
     "use_bias": false,
     "batch_norm": true,
@@ -23,7 +23,7 @@
     "nc_interval": 1000,
     "num_epochs" : 8,
     "optimizer" : "sgd",
-    "lr" : 0.001,
+    "lr" : 0.004,
     "weight_decay": 5e-4,
     "sgd_momentum" : 0.9,
     "out_dir": "out/final/"

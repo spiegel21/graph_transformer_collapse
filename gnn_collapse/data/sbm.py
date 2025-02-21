@@ -59,7 +59,6 @@ class SBM(Dataset):
         # placeholders for pyg/python version compatibility
         self._indices = None
         self.transform = transform
-        print(f'Using PE? {self.transform}')
         self.validate()
         self.prepare_paths()
         self.load_data()
