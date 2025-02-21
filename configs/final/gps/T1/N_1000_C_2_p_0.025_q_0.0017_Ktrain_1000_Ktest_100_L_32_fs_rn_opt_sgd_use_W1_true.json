@@ -14,7 +14,7 @@
     "input_feature_dim": 8,
     "hidden_feature_dim": 8,
     "num_layers" : 32,
-    "use_W1" : true,
+    "use_W1" : false,
     "use_bias": false,
     "batch_norm": true,
     "non_linearity": "relu",
