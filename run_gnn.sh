@@ -18,13 +18,13 @@ echo -e "$FILE"
 python main.py $FILE
 done
 
-# GPS
-for FILE in configs/final/gps/T1/*
-do
-echo -e "$FILE"
-# rm -rf models out
-python main.py $FILE
-done
+# # GPS
+# for FILE in configs/final/gps/T1/*
+# do
+# echo -e "$FILE"
+# # rm -rf models out
+# python main.py $FILE
+# done
 
 # SMPNN
 for FILE in configs/final/smpnn/C_2/*
@@ -46,7 +46,7 @@ done
 for FILE in configs/final/easygt/C_2/*
 do
 echo -e "$FILE"
-rm -rf models out
+# rm -rf models out
 python main.py $FILE
 done
 
