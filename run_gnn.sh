@@ -42,13 +42,13 @@ done
 # python main.py $FILE
 # done
 
-# Graph Transformer
-for FILE in configs/final/easygt/C_2/*
-do
-echo -e "$FILE"
-# rm -rf models out
-python main.py $FILE
-done
+# # Graph Transformer
+# for FILE in configs/final/easygt/C_2/*
+# do
+# echo -e "$FILE"
+# # rm -rf models out
+# python main.py $FILE
+# done
 
 # GCN with the same parameters (few layers, tiny hidden size)
 # for FILE in configs/final/sample/T1/*

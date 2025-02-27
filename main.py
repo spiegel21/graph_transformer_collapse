@@ -113,7 +113,6 @@ if __name__ == "__main__":
             is_training=True,
             transform=transform
         )
-        print(train_sbm_dataset.get(0)['x'].shape)
         nc_sbm_dataset = SBM(
             args=args,
             N=args["N_train"],
@@ -127,7 +126,6 @@ if __name__ == "__main__":
             is_training=True,
             transform=transform
         )
-        print(train_sbm_dataset.get(0)['x'].shape)
         # keep batch size = 1 for consistent measurement of loss and accuracies under
         # permutation of classes.
         train_dataloader = DataLoader(dataset=train_sbm_dataset, batch_size=1)
