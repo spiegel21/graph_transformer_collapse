@@ -201,9 +201,10 @@ class OnlineRunner:
             # self.track_belief_histograms(dataloader=test_dataloader, model=model, epoch=0)
             # TRACK NC INTERMEDIATE self.track_test_graphs_intermediate_nc(dataloader=test_dataloader, model=model, epoch=epoch)
 
-            with open(self.args["results_file"], 'a') as f:
-                f.write("""Avg train loss: {}\n Avg train acc: {}\n Std train acc: {}\n""".format(
-                    np.mean(losses), np.mean(accuracies), np.std(accuracies)))
+            if losses and accuracies:
+                with open(self.args["results_file"], 'a') as f:
+                    f.write("""Avg train loss: {}\n Avg train acc: {}\n Std train acc: {}\n""".format(
+                        np.mean(losses), np.mean(accuracies), np.std(accuracies)))
 
         if self.args["track_nc"] and not os.path.exists(animation_filename):
             print("track_nc enabled! preparing a new animation file")
@@ -235,13 +236,14 @@ class OnlineRunner:
             losses.append(loss.detach().cpu().numpy())
             accuracies.append(acc)
 
-        print ('Avg test loss', np.mean(losses))
-        print ('Avg test acc', np.mean(accuracies))
-        print ('Std test acc', np.std(accuracies))
+        if losses and accuracies:
+            print ('Avg test loss', np.mean(losses))
+            print ('Avg test acc', np.mean(accuracies))
+            print ('Std test acc', np.std(accuracies))
 
-        with open(self.args["results_file"], 'a') as f:
-            f.write("""Epoch: {} Avg test loss: {}\n Avg test acc: {}\n Std test acc: {}\n""".format(
-                epoch, np.mean(losses), np.mean(accuracies), np.std(accuracies)))
+            with open(self.args["results_file"], 'a') as f:
+                f.write("""Epoch: {} Avg test loss: {}\n Avg test acc: {}\n Std test acc: {}\n""".format(
+                    epoch, np.mean(losses), np.mean(accuracies), np.std(accuracies)))
 
         plt.grid(True)
         plt.plot(losses)
@@ -544,13 +546,14 @@ class OnlineIncRunner:
                     compute_nc1(features=self.features, labels=data.y)
                 )
 
-        print('Avg train loss', np.mean(losses))
-        print('Avg train acc', np.mean(accuracies))
-        print('Std train acc', np.std(accuracies))
+        if losses and accuracies:
+            print('Avg train loss', np.mean(losses))
+            print('Avg train acc', np.mean(accuracies))
+            print('Std train acc', np.std(accuracies))
 
-        with open(args["results_file"], 'a') as f:
-            f.write("""Training layer {} Avg train loss: {}\n Avg train acc: {}\n Std train acc: {}\n""".format(
-                layer_idx, np.mean(losses), np.mean(accuracies), np.std(accuracies)))
+            with open(args["results_file"], 'a') as f:
+                f.write("""Training layer {} Avg train loss: {}\n Avg train acc: {}\n Std train acc: {}\n""".format(
+                    layer_idx, np.mean(losses), np.mean(accuracies), np.std(accuracies)))
 
         plt.plot(losses)
         plt.xlabel("iter")
@@ -591,13 +594,14 @@ class OnlineIncRunner:
             losses.append(loss.detach().cpu().numpy())
             accuracies.append(acc)
 
-        print ('Avg test loss', np.mean(losses))
-        print ('Avg test acc', np.mean(accuracies))
-        print ('Std test acc', np.std(accuracies))
+        if losses and accuracies:
+            print ('Avg test loss', np.mean(losses))
+            print ('Avg test acc', np.mean(accuracies))
+            print ('Std test acc', np.std(accuracies))
 
-        with open(args["results_file"], 'a') as f:
-            f.write("""Testing layer {} Avg test loss: {}\n Avg test acc: {}\n Std test acc: {}\n""".format(
-                layer_idx, np.mean(losses), np.mean(accuracies), np.std(accuracies)))
+            with open(args["results_file"], 'a') as f:
+                f.write("""Testing layer {} Avg test loss: {}\n Avg test acc: {}\n Std test acc: {}\n""".format(
+                    layer_idx, np.mean(losses), np.mean(accuracies), np.std(accuracies)))
 
         plt.plot(losses)
         plt.xlabel("iter")
