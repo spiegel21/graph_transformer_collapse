@@ -609,16 +609,16 @@ class GUFMMetricTracker:
         # ax = self.plot_fro_norms(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
         #                         nc_interval=nc_interval)
 
-        print("plotting NC2 metrics")
-        ax = self.plot_NC2(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
-                            labels_array=labels_array, nc_interval=nc_interval)
-        ax[1,1].set_title('NC_2 Metrics')
+        # print("plotting NC2 metrics")
+        # ax = self.plot_NC2(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
+        #                     labels_array=labels_array, nc_interval=nc_interval)
+        # ax[1,1].set_title('NC_2 Metrics')
 
 
-        print("plotting NC3 metrics")
-        ax = self.plot_NC3(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
-                            labels_array=labels_array, nc_interval=nc_interval)
-        ax[1,2].set_title('NC_3 Metric')
+        # print("plotting NC3 metrics")
+        # ax = self.plot_NC3(ax=ax, W1=W1, W2=W2, H_array=H_array, A_hat_array=A_hat_array,
+        #                     labels_array=labels_array, nc_interval=nc_interval)
+        # ax[1,2].set_title('NC_3 Metric')
 
         plt.suptitle('Graph Transformer')
         fig.tight_layout()
