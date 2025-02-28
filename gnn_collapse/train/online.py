@@ -163,6 +163,7 @@ class OnlineRunner:
 
         max_iters = self.args["num_epochs"] * len(dataloader)
         for epoch in range(self.args["num_epochs"]):
+            print("Epoch: ", epoch)
             losses = []
             accuracies = []
             for step_idx, data in tqdm(enumerate(dataloader)):
@@ -200,7 +201,6 @@ class OnlineRunner:
             )
             # self.track_belief_histograms(dataloader=test_dataloader, model=model, epoch=0)
             # TRACK NC INTERMEDIATE self.track_test_graphs_intermediate_nc(dataloader=test_dataloader, model=model, epoch=epoch)
-            print("Saving losses and accuracies")
             if losses and accuracies:
                 with open(self.args["results_file"], 'a') as f:
                     f.write("""Avg train loss: {}\n Avg train acc: {}\n Std train acc: {}\n""".format(
