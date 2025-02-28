@@ -18,8 +18,12 @@ class Metric:
         self.label = label
 
     def update_mean_std(self, arr):
-        self.means.append(np.mean(arr))
-        self.stds.append(np.std(arr))
+        if len(arr) > 0:
+            self.means.append(np.mean(arr))
+            self.stds.append(np.std(arr))
+        else:
+            self.means.append(np.nan)
+            self.stds.append(np.nan)
 
     def size(self):
         return len(self.means)
@@ -396,15 +400,38 @@ class GUFMMetricTracker:
             HA_hat_NC2_OF_arr.append(HA_hat_class_means_OF_alignment.detach().cpu().numpy())
 
         # NC2 ETF
-        self.H_NC2_ETF.update_mean_std(np.log10(np.array(H_NC2_ETF_arr)))
-        self.HA_hat_NC2_ETF.update_mean_std(np.log10(np.array(HA_hat_NC2_ETF_arr)))
-        self.W1_NC2_ETF.update_mean_std(np.log10(np.array(W1_NC2_ETF_arr)))
-        self.W2_NC2_ETF.update_mean_std(np.log10(np.array(W2_NC2_ETF_arr)))
+        H_NC2_ETF_arr_log = np.log10(np.array(H_NC2_ETF_arr))
+        H_NC2_ETF_arr_log = H_NC2_ETF_arr_log[np.isfinite(H_NC2_ETF_arr_log)]
+        self.H_NC2_ETF.update_mean_std(H_NC2_ETF_arr_log)
+
+        HA_hat_NC2_ETF_arr_log = np.log10(np.array(HA_hat_NC2_ETF_arr))
+        HA_hat_NC2_ETF_arr_log = HA_hat_NC2_ETF_arr_log[np.isfinite(HA_hat_NC2_ETF_arr_log)]
+        self.HA_hat_NC2_ETF.update_mean_std(HA_hat_NC2_ETF_arr_log)
+
+        W1_NC2_ETF_arr_log = np.log10(np.array(W1_NC2_ETF_arr))
+        W1_NC2_ETF_arr_log = W1_NC2_ETF_arr_log[np.isfinite(W1_NC2_ETF_arr_log)]
+        self.W1_NC2_ETF.update_mean_std(W1_NC2_ETF_arr_log)
+
+        W2_NC2_ETF_arr_log = np.log10(np.array(W2_NC2_ETF_arr))
+        W2_NC2_ETF_arr_log = W2_NC2_ETF_arr_log[np.isfinite(W2_NC2_ETF_arr_log)]
+        self.W2_NC2_ETF.update_mean_std(W2_NC2_ETF_arr_log)
+
         # NC2 OF
-        self.H_NC2_OF.update_mean_std(np.log10(np.array(H_NC2_OF_arr)))
-        self.HA_hat_NC2_OF.update_mean_std(np.log10(np.array(HA_hat_NC2_OF_arr)))
-        self.W1_NC2_OF.update_mean_std(np.log10(np.array(W1_NC2_OF_arr)))
-        self.W2_NC2_OF.update_mean_std(np.log10(np.array(W2_NC2_OF_arr)))
+        H_NC2_OF_arr_log = np.log10(np.array(H_NC2_OF_arr))
+        H_NC2_OF_arr_log = H_NC2_OF_arr_log[np.isfinite(H_NC2_OF_arr_log)]
+        self.H_NC2_OF.update_mean_std(H_NC2_OF_arr_log)
+
+        HA_hat_NC2_OF_arr_log = np.log10(np.array(HA_hat_NC2_OF_arr))
+        HA_hat_NC2_OF_arr_log = HA_hat_NC2_OF_arr_log[np.isfinite(HA_hat_NC2_OF_arr_log)]
+        self.HA_hat_NC2_OF.update_mean_std(HA_hat_NC2_OF_arr_log)
+
+        W1_NC2_OF_arr_log = np.log10(np.array(W1_NC2_OF_arr))
+        W1_NC2_OF_arr_log = W1_NC2_OF_arr_log[np.isfinite(W1_NC2_OF_arr_log)]
+        self.W1_NC2_OF.update_mean_std(W1_NC2_OF_arr_log)
+
+        W2_NC2_OF_arr_log = np.log10(np.array(W2_NC2_OF_arr))
+        W2_NC2_OF_arr_log = W2_NC2_OF_arr_log[np.isfinite(W2_NC2_OF_arr_log)]
+        self.W2_NC2_OF.update_mean_std(W2_NC2_OF_arr_log)
 
         metrics = [self.W1_NC2_ETF] if self.args["use_W1"] else []
         # for C==2, when the class means are centered by global mean,
@@ -494,13 +521,31 @@ class GUFMMetricTracker:
 
 
         # NC3 ETF
-        self.W1_H_NC3_ETF.update_mean_std(np.log10(np.array(W1_H_NC3_ETF_arr)))
-        self.W2_HA_hat_NC3_ETF.update_mean_std(np.log10(np.array(W2_HA_hat_NC3_ETF_arr)))
-        self.W1H_W2HA_hat_NC3_ETF.update_mean_std(np.log10(np.array(W1H_W2HA_hat_NC3_ETF_arr)))
+        W1_H_NC3_ETF_arr_log = np.log10(np.array(W1_H_NC3_ETF_arr))
+        W1_H_NC3_ETF_arr_log = W1_H_NC3_ETF_arr_log[np.isfinite(W1_H_NC3_ETF_arr_log)]
+        self.W1_H_NC3_ETF.update_mean_std(W1_H_NC3_ETF_arr_log)
+
+        W2_HA_hat_NC3_ETF_arr_log = np.log10(np.array(W2_HA_hat_NC3_ETF_arr))
+        W2_HA_hat_NC3_ETF_arr_log = W2_HA_hat_NC3_ETF_arr_log[np.isfinite(W2_HA_hat_NC3_ETF_arr_log)]
+        self.W2_HA_hat_NC3_ETF.update_mean_std(W2_HA_hat_NC3_ETF_arr_log)
+
+        W1H_W2HA_hat_NC3_ETF_arr_log = np.log10(np.array(W1H_W2HA_hat_NC3_ETF_arr))
+        W1H_W2HA_hat_NC3_ETF_arr_log = W1H_W2HA_hat_NC3_ETF_arr_log[np.isfinite(W1H_W2HA_hat_NC3_ETF_arr_log)]
+        self.W1H_W2HA_hat_NC3_ETF.update_mean_std(W1H_W2HA_hat_NC3_ETF_arr_log)
+
         # NC3 OF
-        self.W1_H_NC3_OF.update_mean_std(np.log10(np.array(W1_H_NC3_OF_arr)))
-        self.W2_HA_hat_NC3_OF.update_mean_std(np.log10(np.array(W2_HA_hat_NC3_OF_arr)))
-        self.W1H_W2HA_hat_NC3_OF.update_mean_std(np.log10(np.array(W1H_W2HA_hat_NC3_OF_arr)))
+        W1_H_NC3_OF_arr_log = np.log10(np.array(W1_H_NC3_OF_arr))
+        W1_H_NC3_OF_arr_log = W1_H_NC3_OF_arr_log[np.isfinite(W1_H_NC3_OF_arr_log)]
+        self.W1_H_NC3_OF.update_mean_std(W1_H_NC3_OF_arr_log)
+
+        W2_HA_hat_NC3_OF_arr_log = np.log10(np.array(W2_HA_hat_NC3_OF_arr))
+        W2_HA_hat_NC3_OF_arr_log = W2_HA_hat_NC3_OF_arr_log[np.isfinite(W2_HA_hat_NC3_OF_arr_log)]
+        self.W2_HA_hat_NC3_OF.update_mean_std(W2_HA_hat_NC3_OF_arr_log)
+
+        W1H_W2HA_hat_NC3_OF_arr_log = np.log10(np.array(W1H_W2HA_hat_NC3_OF_arr))
+        W1H_W2HA_hat_NC3_OF_arr_log = W1H_W2HA_hat_NC3_OF_arr_log[np.isfinite(W1H_W2HA_hat_NC3_OF_arr_log)]
+        self.W1H_W2HA_hat_NC3_OF.update_mean_std(W1H_W2HA_hat_NC3_OF_arr_log)
+
         # plain alignment
         self.W1_H_NC3.update_mean_std(np.log10(np.array(W1_H_NC3_arr)))
         self.W2_HA_hat_NC3.update_mean_std(np.log10(np.array(W2_HA_hat_NC3_arr)))
