@@ -202,6 +202,10 @@ class OnlineRunner:
             # self.track_belief_histograms(dataloader=test_dataloader, model=model, epoch=0)
             # TRACK NC INTERMEDIATE self.track_test_graphs_intermediate_nc(dataloader=test_dataloader, model=model, epoch=epoch)
             if losses and accuracies:
+                print ('Avg train loss', np.mean(losses))
+                print ('Avg train acc', np.mean(accuracies))
+                print ('Std train acc', np.std(accuracies))
+                print("-----------------------------------")
                 with open(self.args["results_file"], 'a') as f:
                     f.write("""Avg train loss: {}\n Avg train acc: {}\n Std train acc: {}\n""".format(
                         np.mean(losses), np.mean(accuracies), np.std(accuracies)))
