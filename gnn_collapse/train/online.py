@@ -147,6 +147,8 @@ class OnlineRunner:
             model: baseline or gnn models to train
             optimizer: The torch optimizer to update weights, ex: Adam, SGD.
         """
+        device = self.args["device"]
+        model = model.to(device)
 
         if self.args["track_nc"]:
             # This list stores the snapshots of nc1 metrics over time
@@ -159,19 +161,20 @@ class OnlineRunner:
 
         animation_filename = "{}/nc_tracker.mp4".format(self.args["vis_dir"])
 
-        max_iters = self.args["num_epochs"]*len(dataloader)
+        max_iters = self.args["num_epochs"] * len(dataloader)
         for epoch in range(self.args["num_epochs"]):
             losses = []
             accuracies = []
             for step_idx, data in tqdm(enumerate(dataloader)):
-                iter_count = epoch*len(dataloader) + step_idx
+                iter_count = epoch * len(dataloader) + step_idx
+                data = data.to(device)
                 if not self.saved_model_exists:
                     model, optimizer, loss, acc = self.train_single_iter(
                         data=data, model=model, optimizer=optimizer)
                     losses.append(loss)
                     accuracies.append(acc)
 
-                if self.args["track_nc"] and (iter_count%self.args["nc_interval"] == 0 or iter_count + 1 == max_iters):
+                if self.args["track_nc"] and (iter_count % self.args["nc_interval"] == 0 or iter_count + 1 == max_iters):
                     model_name = "model_iter_{}.pt".format(iter_count)
                     model_path = os.path.join(self.model_dir, model_name)
                     # if self.saved_model_exists:
@@ -187,7 +190,7 @@ class OnlineRunner:
                         filenames.append(filename)
                         print("Tracking NC metrics")
                         self.track_train_graphs_final_nc(dataloader=nc_dataloader, model=model,
-                                       iter_count=iter_count, filename=filename)
+                                                          iter_count=iter_count, filename=filename)
 
             # get stats after epoch
             self.test_loop(
