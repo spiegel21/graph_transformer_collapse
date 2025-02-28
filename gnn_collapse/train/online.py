@@ -316,26 +316,25 @@ class OnlineRunner:
 
         # Pick final-layer parameters based on model_name
         if self.args["model_name"] == "graphconv":
-            W2 = torch.clone(model.final_layer.lin_rel.weight).type(torch.double)
+            W2 = torch.clone(model.final_layer.lin_rel.weight).type(torch.double).detach().cpu()
             if self.args["use_W1"]:
-                W1 = torch.clone(model.final_layer.lin_root.weight).type(torch.double)
+                W1 = torch.clone(model.final_layer.lin_root.weight).type(torch.double).detach().cpu()
             else:
-                W1 = torch.zeros_like(W2).type(torch.double)
+                W1 = torch.zeros_like(W2).type(torch.double).detach().cpu()
 
         elif self.args["model_name"] == "gin":
-            W2 = torch.clone(model.final_layer.nn.weight).type(torch.double)
+            W2 = torch.clone(model.final_layer.nn.weight).type(torch.double).detach().cpu()
             if self.args["use_W1"]:
-                W1 = torch.clone(model.final_layer.nn.weight).type(torch.double)
+                W1 = torch.clone(model.final_layer.nn.weight).type(torch.double).detach().cpu()
             else:
-                W1 = torch.zeros_like(W2).type(torch.double)
+                W1 = torch.zeros_like(W2).type(torch.double).detach().cpu()
 
         elif self.args["model_name"] == "smpnn":
             W2 = torch.clone(model.final_layer.weight).type(torch.double)
             if self.args["use_W1"]:
-                W1 = torch.clone(model.final_layer.weight).type(torch.double)
+                W1 = torch.clone(model.final_layer.weight).type(torch.double).detach().cpu()
             else:
-                W1 = torch.zeros_like(W2).type(torch.double)
-
+                W1 = torch.zeros_like(W2).type(torch.double).detach().cpu()
         elif self.args["model_name"] == "easygt":
             # If we're doing the graph transformer, we don't actually use W1 and W2
             # So just make them zero arrays of the appropriate shape and ignore it

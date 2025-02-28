@@ -144,7 +144,6 @@ class GUFMMetricTracker:
             class_means = scatter(feat, labels.type(torch.int64), dim=1, reduce="mean")
             global_mean = torch.mean(class_means, dim=1).unsqueeze(-1)
             z = class_means - global_mean
-            W = W.to(z.device)
             Wz = torch.mm(W, z)
             Wz /= torch.norm(Wz, p='fro')
             K = W.shape[0]
