@@ -189,6 +189,8 @@ class OnlineRunner:
                         filename = "{}/nc_tracker_{}.png".format(self.args["vis_dir"], iter_count)
                         filenames.append(filename)
                         print("Tracking NC metrics")
+                        nc_dataloader = nc_dataloader.to(device)
+                        model = model.to(device)
                         self.track_train_graphs_final_nc(dataloader=nc_dataloader, model=model,
                                                           iter_count=iter_count, filename=filename)
 
