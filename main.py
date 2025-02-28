@@ -133,14 +133,18 @@ if __name__ == "__main__":
         # Helper function to load or create dataset.
         def get_dataset(cache_path, dataset_params):
             dataset_file = os.path.join(cache_path, "dataset.pt")
-            if os.path.exists(dataset_file):
-                print("Loading dataset from", dataset_file)
-                dataset = torch.load(dataset_file)
-            else:
-                print("Creating dataset and saving to", dataset_file)
-                dataset = SBM(**dataset_params)
-                os.makedirs(cache_path, exist_ok=True)
-                torch.save(dataset, dataset_file)
+            # if os.path.exists(dataset_file):
+            #     print("Loading dataset from", dataset_file)
+            #     dataset = torch.load(dataset_file)
+            # else:
+            #     print("Creating dataset and saving to", dataset_file)
+            #     dataset = SBM(**dataset_params)
+            #     os.makedirs(cache_path, exist_ok=True)
+            #     torch.save(dataset, dataset_file)
+            print("Creating dataset and saving to", dataset_file)
+            dataset = SBM(**dataset_params)
+            os.makedirs(cache_path, exist_ok=True)
+            torch.save(dataset, dataset_file)
             return dataset
 
         # Prepare parameters for the SBM dataset instantiation.
