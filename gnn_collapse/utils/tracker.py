@@ -18,7 +18,7 @@ class Metric:
         self.label = label
 
     def update_mean_std(self, arr):
-        if len(arr) > 0:
+        if len(arr) > 0 and np.isfinite(arr).all():
             self.means.append(np.mean(arr))
             self.stds.append(np.std(arr))
         else:
