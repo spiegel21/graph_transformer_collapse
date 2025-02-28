@@ -23,7 +23,7 @@
     "nc_interval": 1000,
     "num_epochs" : 8,
     "optimizer" : "sgd",
-    "lr" : 0.004,
+    "lr" : 0.008,
     "weight_decay": 5e-4,
     "sgd_momentum" : 0.9,
     "out_dir": "out/final/"
