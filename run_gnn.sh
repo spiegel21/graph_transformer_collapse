@@ -1,22 +1,22 @@
 #!/bin/bash
 
-mkdir -p out/final/
+# mkdir -p out/final/
 
-# GIN
-for FILE in configs/final/gin/C_2/*
-do
-echo -e "$FILE"
-# rm -rf models out
-python main.py $FILE
-done
+# # GIN
+# for FILE in configs/final/gin/C_2/*
+# do
+# echo -e "$FILE"
+# # rm -rf models out
+# python main.py $FILE
+# done
 
-# GCN
-for FILE in configs/final/graphconv/C_2/N_1000_C_2_p_0.025_q_0.0017_Ktrain_1000_Ktest_100_L_32_fs_rn_opt_sgd_use_W1_false.json
-do
-echo -e "$FILE"
-# rm -rf models out
-python main.py $FILE
-done
+# # GCN
+# for FILE in configs/final/graphconv/C_2/N_1000_C_2_p_0.025_q_0.0017_Ktrain_1000_Ktest_100_L_32_fs_rn_opt_sgd_use_W1_false.json
+# do
+# echo -e "$FILE"
+# # rm -rf models out
+# python main.py $FILE
+# done
 
 # # GPS
 # for FILE in configs/final/gps/T1/*
@@ -26,13 +26,13 @@ done
 # python main.py $FILE
 # done
 
-# SMPNN
-for FILE in configs/final/smpnn/C_2/*
-do
-echo -e "$FILE"
-# rm -rf models out
-python main.py $FILE
-done
+# # SMPNN
+# for FILE in configs/final/smpnn/C_2/*
+# do
+# echo -e "$FILE"
+# # rm -rf models out
+# python main.py $FILE
+# done
 
 # # Comparing GT and GCN with equivalent parameters
 # for FILE in configs/final/compare_gt_gcn/*/*
