@@ -18,29 +18,13 @@
 # python main.py $FILE
 # done
 
-# # GPS
-# for FILE in configs/final/gps/T1/*
-# do
-# echo -e "$FILE"
-# # rm -rf models out
-# python main.py $FILE
-# done
-
-# # SMPNN
-# for FILE in configs/final/smpnn/C_2/*
-# do
-# echo -e "$FILE"
-# # rm -rf models out
-# python main.py $FILE
-# done
-
-# # Comparing GT and GCN with equivalent parameters
-# for FILE in configs/final/compare_gt_gcn/*/*
-# do
-# echo -e "$FILE"
+# SMPNN
+for FILE in configs/final/smpnn/C_2/*
+do
+echo -e "$FILE"
 # rm -rf models out
-# python main.py $FILE
-# done
+python main.py $FILE
+done
 
 # Graph Transformer
 for FILE in configs/final/easygt/C_2/*
