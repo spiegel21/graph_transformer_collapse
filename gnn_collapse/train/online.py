@@ -212,7 +212,7 @@ class OnlineRunner:
 
         if self.args["track_nc"] and not os.path.exists(animation_filename):
             print("track_nc enabled! preparing a new animation file")
-            self.metric_tracker.prepare_animation(image_filenames=filenames, animation_filename=animation_filename)
+            # self.metric_tracker.prepare_animation(image_filenames=filenames, animation_filename=animation_filename)
 
         #     print("Length of feature_snapshots list: {}".format(len(self.features_nc1_snapshots)))
         #     print("Number of layers tracked: {}".format(len(self.features_nc1_snapshots[0])))
@@ -306,7 +306,7 @@ class OnlineRunner:
                 plt.close()
 
             animation_filename = "{}belief_hist_epoch_{}.mp4".format(self.args["vis_dir"], epoch)
-            self.prepare_animation(image_filenames=filenames, animation_filename=animation_filename)
+            # self.prepare_animation(image_filenames=filenames, animation_filename=animation_filename)
             break
 
     @torch.no_grad()
