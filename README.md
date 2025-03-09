@@ -59,23 +59,11 @@ python collect_activations.py [resnet18 or vit_small]
 ```
 Lastly, plotting code can be found in the Jupyter Notebook `plot_collapse.ipynb`
 
-## Citation
+## Acknowledgements
 
-```bibtex
-@inproceedings{kothapalli2023neural,
-  title={A Neural Collapse Perspective on Feature Evolution in Graph Neural Networks},
-  author={Kothapalli, Vignesh and Tirer, Tom and Bruna, Joan},
-  booktitle={Thirty-seventh Conference on Neural Information Processing Systems},
-  year={2023}
-}
-```
+Code in the `sbm_collapse` directory is based on the GitHub repository [here](https://github.com/kvignesh1420/gnn_collapse), for the paper "A neural collapse perspective on feature evolution in graph neural networks" by Vignesh Kothapalli, Tom Tirer, and Joan Bruna.
 
-## Contributing
+Code in the `cora_collapse` directory is based on the Github repository [here](https://github.com/rampasek/GraphGPS), for the paper "Recipe for a General, Powerful, Scalable
+Graph Transformer" by Ladislav Rampášek et al.
 
-As written in the original repository:
-
-Please feel free to open [issues](https://github.com/kvignesh1420/gnn_collapse/issues) and create [pull requests](https://github.com/kvignesh1420/gnn_collapse/pulls) to fix bugs and improve performance.
-
-## License
-
-[MIT](LICENSE)
+We'd also like to thank our faculty advisors, Yusu Wang and Gal Mishne, for their mentorship this quarter, Professor Umesh Bellur for organizing the data science capstone project, our TA Zimo Wang for his feedback throughout the quarter and our classmates Penny King, Esther Cho, and Quentin Callahan for their help in working with the GraphGPS code.
