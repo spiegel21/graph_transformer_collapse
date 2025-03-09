@@ -45,7 +45,7 @@ _NOTE: The code for `gnn_collapse.models.graphconv.GraphConvModel()` can be used
 
 ## Experiments
 
-As written in the original repository:
+Experiments on SBMs are contained in the root directory. As written in the original repository:
 
 We employ a config based design to run and hash the experiments. The `configs` folder contains the `final` folder to maintain the set of experiments that have been presented in the paper. The `experimental` folder is a placeholder for new contributions. A config file is a JSON formatted file which is passed to the python script for parsing. The config determines the runtime parameters of the experiment and is hashed for uniqueness.
 
@@ -70,6 +70,23 @@ $ bash run_spectral.sh
 ```
 
 A new folder called `out` will be created and the results are stored in a folder named after the hash of the config.
+
+Experiments on CORA are all contained within the directory cora_collapse.
+
+Experiments on MNIST (found in the appendix of our report) are contained within the directory mnist_collapse. Begin by moving to this directory
+```
+cd mnist_collapse
+```
+The MNIST code is split into three main files.
+To train models and save parameters
+```
+python train.py [resnet18 or vit_small]
+```
+To collect last layer activations
+```
+python collect_activations.py [resnet18 or vit_small]
+```
+Lastly, plotting code can be found in the Jupyter Notebook `plot_collapse.ipynb`
 
 ## Citation
 
