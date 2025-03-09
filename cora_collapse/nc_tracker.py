@@ -21,6 +21,7 @@ class Tracker():
          self.s_b_list = []
          self.stn_list = []
          self.ratio_list = []
+         print(device)
          self.labels = labels.type(torch.int64).to(device)
 
     def hook_last_layer(self):

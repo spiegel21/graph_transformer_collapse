@@ -7,9 +7,9 @@ This repository contains the code for the DSC 180B Senior Capstone at UC San Die
 torch needs to be installed before the rest of the modules in requirements.txt due to the nature of the setup for torch-scatter and torch-sparse. [See this thread]() for an explanation.
 
 ```bash
-$ python3.9 -m virtualenv .venv
+$ python3.12 -m virtualenv .venv
 $ source .venv/bin/activate
-$ pip install torch==2.2.0
+$ pip install torch==2.5.1
 $ pip install -r requirements.txt
 ```
 
