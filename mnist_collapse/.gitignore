@@ -1,0 +1,7 @@
+*.ipynb
+numpy_activations/*/*
+models/*/*
+metric_lists/*/*
+logs/*
+data/*
+__pycache__
